@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skyline Labs — Software, designed &amp; built</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0D1113;
+    --ink-2:#151B1E;
+    --panel:#1A2124;
+    --paper:#ECE7DA;
+    --paper-dim:#B9B4A6;
+    --line:rgba(236,231,218,0.12);
+    --line-strong:rgba(236,231,218,0.22);
+    --amber:#D9A441;
+    --amber-dim:#9C7A3A;
+    --teal:#4FA3A0;
+    --danger:#C4573A;
+    --radius:2px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--ink);
+    color:var(--paper);
+    font-family:'Inter',sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--amber); color:var(--ink);}
+
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  .wrap{max-width:1180px; margin:0 auto; padding:0 32px;}
+  a{color:inherit;}
+
+  /* ---------- background grid ---------- */
+  .grid-bg{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size:64px 64px;
+    opacity:0.35;
+    -webkit-mask-image:radial-gradient(ellipse 80% 60% at 50% 0%, black 10%, transparent 75%);
+            mask-image:radial-gradient(ellipse 80% 60% at 50% 0%, black 10%, transparent 75%);
+  }
+
+  /* ---------- nav ---------- */
+  header{
+    position:sticky; top:0; z-index:50;
+    background:rgba(13,17,19,0.85);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:20px 32px; max-width:1180px; margin:0 auto;
+  }
+  .logo{
+    font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.1rem;
+    letter-spacing:0.02em; display:flex; align-items:center; gap:10px;
+  }
+  .logo .dot{width:9px; height:9px; background:var(--amber); border-radius:50%; box-shadow:0 0 12px var(--amber);}
+  .nav-links{display:flex; gap:36px; font-size:0.86rem;}
+  .nav-links a{
+    text-decoration:none; color:var(--paper-dim); font-family:'IBM Plex Mono',monospace;
+    letter-spacing:0.02em; transition:color .2s;
+  }
+  .nav-links a:hover{color:var(--amber);}
+  .nav-cta{
+    font-family:'IBM Plex Mono',monospace; font-size:0.82rem;
+    border:1px solid var(--line-strong); padding:9px 18px; border-radius:var(--radius);
+    text-decoration:none; color:var(--paper); transition:all .2s; white-space:nowrap;
+  }
+  .nav-cta:hover{border-color:var(--amber); color:var(--amber);}
+  .burger{display:none;}
+
+  /* ---------- hero ---------- */
+  .hero{
+    position:relative; z-index:1;
+    padding:96px 0 80px;
+    border-bottom:1px solid var(--line);
+  }
+  .hero-grid{
+    display:grid; grid-template-columns:1.15fr 0.85fr; gap:56px; align-items:start;
+  }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:10px;
+    font-family:'IBM Plex Mono',monospace; font-size:0.76rem; letter-spacing:0.12em;
+    color:var(--amber); text-transform:uppercase; margin-bottom:28px;
+  }
+  .eyebrow::before{content:''; width:22px; height:1px; background:var(--amber);}
+  h1{
+    font-family:'Space Grotesk',sans-serif; font-weight:600;
+    font-size:clamp(2.4rem, 5vw, 3.9rem); line-height:1.06; letter-spacing:-0.01em;
+    color:var(--paper); max-width:640px;
+  }
+  h1 em{font-style:normal; color:var(--amber);}
+  .hero p.sub{
+    margin-top:26px; font-size:1.08rem; color:var(--paper-dim); max-width:480px; line-height:1.65;
+  }
+  .hero-actions{display:flex; gap:14px; margin-top:38px; flex-wrap:wrap;}
+  .btn{
+    font-family:'IBM Plex Mono',monospace; font-size:0.86rem; padding:14px 26px;
+    border-radius:var(--radius); text-decoration:none; display:inline-flex; align-items:center; gap:10px;
+    transition:all .2s; cursor:pointer; border:1px solid transparent;
+  }
+  .btn-primary{background:var(--amber); color:var(--ink); font-weight:600;}
+  .btn-primary:hover{background:#e8b95a; transform:translateY(-1px);}
+  .btn-ghost{border-color:var(--line-strong); color:var(--paper);}
+  .btn-ghost:hover{border-color:var(--paper-dim);}
+
+  /* ticket card - signature element */
+  .ticket{
+    background:var(--panel);
+    border:1px solid var(--line-strong);
+    border-radius:var(--radius);
+    position:relative;
+    box-shadow:0 30px 60px -20px rgba(0,0,0,0.5);
+  }
+  .ticket::before{
+    content:''; position:absolute; top:0; left:0; right:0; height:3px;
+    background:repeating-linear-gradient(90deg, var(--amber) 0 10px, transparent 10px 18px);
+  }
+  .ticket-head{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:18px 22px; border-bottom:1px dashed var(--line-strong);
+    font-family:'IBM Plex Mono',monospace; font-size:0.72rem; letter-spacing:0.08em;
+    color:var(--paper-dim); text-transform:uppercase;
+  }
+  .status-dot{
+    display:inline-flex; align-items:center; gap:7px; color:var(--teal);
+  }
+  .status-dot::before{content:''; width:7px; height:7px; border-radius:50%; background:var(--teal); box-shadow:0 0 8px var(--teal);}
+  .ticket-body{padding:22px;}
+  .ticket-row{
+    display:grid; grid-template-columns:110px 1fr; gap:12px;
+    padding:12px 0; border-bottom:1px solid var(--line);
+    font-size:0.86rem;
+  }
+  .ticket-row:last-child{border-bottom:none;}
+  .ticket-row .k{font-family:'IBM Plex Mono',monospace; color:var(--paper-dim); font-size:0.76rem; padding-top:2px;}
+  .ticket-row .v{color:var(--paper);}
+  .tag{
+    display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:0.72rem;
+    padding:3px 9px; border:1px solid var(--line-strong); border-radius:20px; margin:2px 4px 2px 0;
+    color:var(--paper-dim);
+  }
+
+  /* ---------- sections generic ---------- */
+  section{position:relative; z-index:1; padding:88px 0;}
+  .section-head{max-width:620px; margin-bottom:56px;}
+  .kicker{
+    font-family:'IBM Plex Mono',monospace; font-size:0.76rem; letter-spacing:0.12em;
+    color:var(--amber); text-transform:uppercase; margin-bottom:14px; display:block;
+  }
+  h2{
+    font-family:'Space Grotesk',sans-serif; font-weight:600;
+    font-size:clamp(1.7rem, 3.2vw, 2.4rem); letter-spacing:-0.01em; color:var(--paper);
+  }
+  .section-head p{color:var(--paper-dim); margin-top:16px; font-size:1.02rem;}
+
+  /* services */
+  .services{border-bottom:1px solid var(--line); border-top:1px solid var(--line);}
+  .service-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line);}
+  .service-card{
+    background:var(--ink); padding:38px 30px; transition:background .25s;
+  }
+  .service-card:hover{background:var(--ink-2);}
+  .service-num{font-family:'IBM Plex Mono',monospace; font-size:0.78rem; color:var(--amber-dim);}
+  .service-card h3{
+    font-family:'Space Grotesk',sans-serif; font-size:1.3rem; font-weight:600;
+    margin:18px 0 12px; color:var(--paper);
+  }
+  .service-card p{color:var(--paper-dim); font-size:0.94rem; line-height:1.65; margin-bottom:18px;}
+  .service-card .stack{display:flex; flex-wrap:wrap; gap:6px;}
+
+  /* process */
+  .process-list{display:flex; flex-direction:column;}
+  .process-item{
+    display:grid; grid-template-columns:70px 1fr; gap:24px;
+    padding:26px 0; border-bottom:1px solid var(--line);
+    align-items:baseline;
+  }
+  .process-item:first-child{border-top:1px solid var(--line);}
+  .process-num{font-family:'IBM Plex Mono',monospace; color:var(--amber); font-size:0.92rem;}
+  .process-item h4{font-family:'Space Grotesk',sans-serif; font-size:1.12rem; color:var(--paper); margin-bottom:6px;}
+  .process-item p{color:var(--paper-dim); font-size:0.94rem; max-width:560px;}
+
+  /* stack strip */
+  .strip{
+    border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+    padding:26px 0; overflow:hidden; white-space:nowrap;
+  }
+  .strip-track{
+    display:inline-flex; gap:44px; font-family:'IBM Plex Mono',monospace;
+    font-size:0.94rem; color:var(--paper-dim); animation:scroll 32s linear infinite;
+  }
+  .strip-track span{color:var(--paper-dim);}
+  .strip-track span.dim{color:var(--amber-dim);}
+  @keyframes scroll{ from{transform:translateX(0);} to{transform:translateX(-50%);} }
+  @media (prefers-reduced-motion: reduce){ .strip-track{animation:none;} }
+
+  /* ---------- contact ---------- */
+  .contact-wrap{display:grid; grid-template-columns:0.9fr 1.1fr; gap:60px;}
+  .contact-info h2{margin-bottom:18px;}
+  .contact-info p{color:var(--paper-dim); font-size:1rem; margin-bottom:30px; max-width:420px;}
+  .info-row{
+    display:flex; align-items:center; gap:14px; padding:14px 0; border-top:1px solid var(--line);
+    font-size:0.92rem;
+  }
+  .info-row:last-child{border-bottom:1px solid var(--line);}
+  .info-row .k{font-family:'IBM Plex Mono',monospace; color:var(--paper-dim); width:90px; flex-shrink:0; font-size:0.78rem; text-transform:uppercase;}
+
+  form{
+    background:var(--panel); border:1px solid var(--line-strong); border-radius:var(--radius);
+    padding:34px; position:relative;
+  }
+  form::before{
+    content:''; position:absolute; top:0; left:0; right:0; height:3px;
+    background:repeating-linear-gradient(90deg, var(--amber) 0 10px, transparent 10px 18px);
+  }
+  .form-title{
+    font-family:'IBM Plex Mono',monospace; font-size:0.76rem; color:var(--paper-dim);
+    text-transform:uppercase; letter-spacing:0.08em; margin-bottom:24px;
+  }
+  .field-row{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  .field{margin-bottom:18px;}
+  label{
+    display:block; font-family:'IBM Plex Mono',monospace; font-size:0.72rem; color:var(--paper-dim);
+    text-transform:uppercase; letter-spacing:0.06em; margin-bottom:8px;
+  }
+  input, select, textarea{
+    width:100%; background:var(--ink); border:1px solid var(--line-strong); color:var(--paper);
+    padding:12px 14px; border-radius:var(--radius); font-family:'Inter',sans-serif; font-size:0.94rem;
+    transition:border-color .2s;
+  }
+  input:focus, select:focus, textarea:focus{outline:none; border-color:var(--amber);}
+  textarea{resize:vertical; min-height:110px;}
+  select{appearance:none; -webkit-appearance:none;
+    background-image:url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B9B4A6' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right 12px center; background-size:16px;
+  }
+  .submit-btn{
+    width:100%; background:var(--amber); color:var(--ink); font-weight:600;
+    font-family:'IBM Plex Mono',monospace; font-size:0.92rem; padding:15px; border:none;
+    border-radius:var(--radius); cursor:pointer; transition:all .2s; margin-top:6px;
+  }
+  .submit-btn:hover{background:#e8b95a;}
+  .form-note{font-size:0.78rem; color:var(--paper-dim); margin-top:14px; line-height:1.6;}
+  .form-status{
+    margin-top:14px; font-family:'IBM Plex Mono',monospace; font-size:0.82rem;
+    padding:10px 12px; border-radius:var(--radius); display:none;
+  }
+  .form-status.show{display:block;}
+  .form-status.ok{background:rgba(79,163,160,0.12); color:var(--teal); border:1px solid rgba(79,163,160,0.3);}
+
+  footer{
+    border-top:1px solid var(--line); padding:40px 0; position:relative; z-index:1;
+  }
+  .footer-row{
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;
+    font-family:'IBM Plex Mono',monospace; font-size:0.78rem; color:var(--paper-dim);
+  }
+  .footer-row a{text-decoration:none; color:var(--paper-dim); transition:color .2s;}
+  .footer-row a:hover{color:var(--amber);}
+
+  /* reveal on scroll */
+  .reveal{opacity:0; transform:translateY(18px); transition:opacity .6s ease, transform .6s ease;}
+  .reveal.in{opacity:1; transform:translateY(0);}
+
+  @media (max-width: 900px){
+    .hero-grid{grid-template-columns:1fr;}
+    .service-grid{grid-template-columns:1fr;}
+    .contact-wrap{grid-template-columns:1fr;}
+    .field-row{grid-template-columns:1fr;}
+    .nav-links{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+
+<header>
+  <nav>
+    <div class="logo">
+      <svg width="26" height="26" viewBox="0 0 64 64" style="flex-shrink:0;">
+        <rect width="64" height="64" rx="14" fill="#0D1113" stroke="var(--line-strong)" stroke-width="1"/>
+        <polyline points="27,19 16,32 27,45" fill="none" stroke="#D9A441" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="37,19 48,32 37,45" fill="none" stroke="#D9A441" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="30" y1="48" x2="34" y2="16" stroke="#ECE7DA" stroke-width="3" stroke-linecap="round" opacity="0.9"/>
+        <circle cx="48" cy="48" r="2.6" fill="#D9A441"/>
+      </svg>
+      <span style="display:flex; flex-direction:column; line-height:1.15;">
+        <span style="font-weight:700;">SKYLINE</span>
+        <span class="mono" style="color:var(--paper-dim); font-weight:400; font-size:0.68rem; letter-spacing:0.1em;">labs</span>
+      </span>
+    </div>
+    <div class="nav-links">
+      <a href="#services">services</a>
+      <a href="#process">process</a>
+      <a href="#contact">contact</a>
+    </div>
+    <a href="#contact" class="nav-cta">Contact →</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <span class="eyebrow">Design &amp; Development Studio</span>
+        <h1>Websites, apps &amp; software — <em>designed and built</em> end to end.</h1>
+        <p class="sub">One person, one point of contact. I design and build web platforms, mobile apps, and desktop software — from the first wireframe to the shipped product. No agency layers, no handoffs.</p>
+        <div class="hero-actions">
+          <a href="#contact" class="btn btn-primary">Send your requirement →</a>
+          <a href="#services" class="btn btn-ghost">See what I build</a>
+        </div>
+      </div>
+
+      <div class="ticket reveal">
+        <div class="ticket-head">
+          <span>Ticket #0417</span>
+          <span class="status-dot">accepting work</span>
+        </div>
+        <div class="ticket-body">
+          <div class="ticket-row"><div class="k">SCOPE</div><div class="v">Web · Mobile · Desktop</div></div>
+          <div class="ticket-row"><div class="k">DELIVERS</div><div class="v">Design + full build, source included</div></div>
+          <div class="ticket-row"><div class="k">TURNAROUND</div><div class="v">Scoped after brief — no guesswork quotes</div></div>
+          <div class="ticket-row"><div class="k">STACK</div>
+            <div class="v">
+              <span class="tag">React</span><span class="tag">Flutter</span><span class="tag">Electron</span><span class="tag">Node.js</span><span class="tag">PostgreSQL</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="services" id="services">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">What I build</span>
+      <h2>Three surfaces, one builder.</h2>
+      <p>Every project starts as a design problem before it's a code problem. I handle both.</p>
+    </div>
+  </div>
+  <div class="service-grid">
+    <div class="service-card reveal">
+      <div class="service-num">01 / WEB</div>
+      <h3>Websites &amp; web apps</h3>
+      <p>Marketing sites, dashboards, and full products — designed from scratch and built to actually load fast and work on a real phone.</p>
+      <div class="stack"><span class="tag">React</span><span class="tag">Next.js</span><span class="tag">Node.js</span></div>
+    </div>
+    <div class="service-card reveal">
+      <div class="service-num">02 / MOBILE</div>
+      <h3>Mobile apps</h3>
+      <p>iOS &amp; Android from one codebase — UI design, backend, and store-ready builds, for consumer apps and internal business tools alike.</p>
+      <div class="stack"><span class="tag">Flutter</span><span class="tag">React Native</span><span class="tag">Firebase</span></div>
+    </div>
+    <div class="service-card reveal">
+      <div class="service-num">03 / DESKTOP</div>
+      <h3>Desktop software</h3>
+      <p>Cross-platform desktop tools — internal utilities, licensing systems, or full products, packaged and ready to install on Windows, macOS, or Linux.</p>
+      <div class="stack"><span class="tag">Electron</span><span class="tag">C++</span><span class="tag">Rust</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="process">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">How it works</span>
+      <h2>Straight line from brief to shipped product.</h2>
+    </div>
+    <div class="process-list">
+      <div class="process-item reveal">
+        <div class="process-num">01</div>
+        <div><h4>You send the brief</h4><p>Use the form below — what you need, for what platform, and any reference you have. Takes two minutes.</p></div>
+      </div>
+      <div class="process-item reveal">
+        <div class="process-num">02</div>
+        <div><h4>Scope &amp; design</h4><p>I come back with a clear scope, timeline, and cost — then design the interface before any code is written.</p></div>
+      </div>
+      <div class="process-item reveal">
+        <div class="process-num">03</div>
+        <div><h4>Build</h4><p>Development with regular check-ins, not a black box you hear from once a month.</p></div>
+      </div>
+      <div class="process-item reveal">
+        <div class="process-num">04</div>
+        <div><h4>Ship &amp; support</h4><p>Deployed, documented, and handed over — with support after launch, not just a final invoice.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="strip">
+  <div class="strip-track">
+    <span>React</span><span class="dim">/</span><span>Next.js</span><span class="dim">/</span><span>Flutter</span><span class="dim">/</span><span>React Native</span><span class="dim">/</span><span>Electron</span><span class="dim">/</span><span>Node.js</span><span class="dim">/</span><span>PostgreSQL</span><span class="dim">/</span><span>Rust</span><span class="dim">/</span><span>C++</span><span class="dim">/</span><span>Docker</span><span class="dim">/</span>
+    <span>React</span><span class="dim">/</span><span>Next.js</span><span class="dim">/</span><span>Flutter</span><span class="dim">/</span><span>React Native</span><span class="dim">/</span><span>Electron</span><span class="dim">/</span><span>Node.js</span><span class="dim">/</span><span>PostgreSQL</span><span class="dim">/</span><span>Rust</span><span class="dim">/</span><span>C++</span><span class="dim">/</span><span>Docker</span><span class="dim">/</span>
+  </div>
+</div>
+
+<section id="contact">
+  <div class="wrap">
+    <div class="contact-wrap">
+      <div class="contact-info reveal">
+        <span class="kicker">Get in touch</span>
+        <h2>Tell me what you need built.</h2>
+        <p>Fill the form — I read every submission myself and reply directly, usually within a day.</p>
+        <div class="info-row"><div class="k">Email</div><div>labs.skylineorbit.io@gmail.com</div></div>
+        <div class="info-row"><div class="k">Based in</div><div>India · working with clients remotely</div></div>
+      </div>
+
+      <form id="briefForm" class="reveal" action="https://formsubmit.co/labs.skylineorbit.io@gmail.com" method="POST">
+        <div class="form-title">// New project brief</div>
+
+        <input type="hidden" name="_subject" value="New project brief — Skyline Labs site">
+        <input type="hidden" name="_template" value="table">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_next" id="nextField" value="">
+
+        <div class="field-row">
+          <div class="field">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="Name" placeholder="Your full name" required>
+          </div>
+          <div class="field">
+            <label for="phone">Phone number</label>
+            <input type="tel" id="phone" name="Phone" placeholder="+91 ..." required>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="email">Email (Gmail etc.)</label>
+          <input type="email" id="email" name="Client Email" placeholder="you@gmail.com" required>
+        </div>
+
+        <div class="field">
+          <label for="type">Project type</label>
+          <select id="type" name="Project Type">
+            <option>Website</option>
+            <option>Mobile app</option>
+            <option>Desktop software</option>
+            <option>Not sure yet</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="requirement">Your requirement</label>
+          <textarea id="requirement" name="Requirement" placeholder="What do you want built? Include any reference sites/apps, must-have features, and rough timeline." required></textarea>
+        </div>
+
+        <button type="submit" class="submit-btn">Send brief →</button>
+        <div class="form-status" id="formStatus"></div>
+        <p class="form-note">Sent directly to my inbox — no email app needs to open on your end.</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap footer-row">
+    <span>© 2026 Skyline Labs</span>
+    <span>
+      <a href="#services">services</a> &nbsp;·&nbsp;
+      <a href="#process">process</a> &nbsp;·&nbsp;
+      <a href="#contact">contact</a>
+    </span>
+  </div>
+</footer>
+
+<script>
+  // reveal on scroll
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, {threshold:0.15});
+  revealEls.forEach(el=>io.observe(el));
+
+  // contact form -> plain POST to FormSubmit (reliable, handles activation automatically)
+  const form = document.getElementById('briefForm');
+  const status = document.getElementById('formStatus');
+  const nextField = document.getElementById('nextField');
+
+  // Point FormSubmit back to this exact page after sending, with ?sent=true
+  const baseUrl = window.location.origin + window.location.pathname;
+  nextField.value = baseUrl + '?sent=true#contact';
+
+  // If we just came back from a successful submission, show the success message
+  if (new URLSearchParams(window.location.search).get('sent') === 'true') {
+    status.textContent = "Sent — I'll get back to you soon.";
+    status.classList.add('show','ok');
+    document.getElementById('contact').scrollIntoView({ behavior: 'instant', block: 'start' });
+  }
+</script>
+
+</body>
+</html>
